@@ -17,6 +17,9 @@
 @property (strong, nonatomic) LFBadge *badge3;
 @property (strong, nonatomic) IBOutlet LFBadge *badge4;//在xib上，0行代码即可接入使用，请忽视xib上的约束错误，因为在内部用代码加过约束
 
+@property (strong, nonatomic) IBOutlet UIButton *btOK;
+
+
 @end
 
 @implementation LFBadgeViewController
@@ -25,27 +28,35 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     _badge1 = [[LFBadge alloc] init];
-    _badge1.type = LFBadgeType_LeftBottom;
-    [self.view1 addSubview:_badge1];
-    [_badge1 addToTopRight];
+    _badge1.lbText.font = [UIFont systemFontOfSize:20];
+    _badge1.type = LFBadgeType_RightTop;
+    _badge1.count = @"1";
+    [_badge1 addToView:self.view1];
+    _badge1.clearBlock = ^{
+        NSLog(@"移除了角标");
+    };
     
     UIBarButtonItem *barItem = [[UIBarButtonItem alloc] initWithTitle:@"设置" style:UIBarButtonItemStylePlain target:self action:@selector(setCount)];
     self.navigationItem.rightBarButtonItem = barItem;
     
     //延时一会才能拿到barItem
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        //导航上的角标
         _badge2 = [[LFBadge alloc] init];
         _badge2.type = LFBadgeType_RightTop;
+        _badge2.edgeInsets = UIEdgeInsetsMake(5, 0, 0, 2);
         [_badge2 addToBarButtonItem:barItem];
-        [_badge2 addToTopRight];
+        
     });
     
+    //tabBarItem上的角标
     _badge3 = [[LFBadge alloc] init];
     [_badge3 addToTabBarItem:self.navigationController.tabBarItem];
-    _badge3.type = LFBadgeType_Center;
-    [_badge3 addToTopRight];
     
-    
+    _badge4.clearBlock = ^{
+        NSLog(@"移除了角标");
+    };
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -69,13 +80,9 @@
     
     if ([_tf.text isEqualToString:@""]) {//红点
         _badge2.edgeInsets = UIEdgeInsetsMake(5, 0, 0, 2);
-        _badge1.type = LFBadgeType_LeftBottom;
     } else {//数字
-        _badge1.type = LFBadgeType_Center;
         _badge2.edgeInsets = UIEdgeInsetsZero;
     }
 }
-
-
 
 @end
